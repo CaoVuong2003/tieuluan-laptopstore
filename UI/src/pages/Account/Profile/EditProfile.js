@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUserInfo } from "../../../store/features/user";
 import { toast } from "react-hot-toast";
-import {updateUserDetails} from "../../../api/userInfo" 
+import {updateUserDetails} from "../../../api/user/userInfo" 
 import { setLoading } from "../../../store/features/common";
 import { useNavigate } from "react-router-dom";
 

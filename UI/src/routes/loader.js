@@ -1,4 +1,4 @@
-import { getProductBySlug } from '../api/fetchProducts';
+import { getProductBySlug } from '../api/fetch/fetchProducts';
 import { setLoading } from '../store/features/common';
 import store from '../store/store';
 

@@ -6,7 +6,7 @@ import {
   verifyOtpFPAPI,
   resendOtpAPI,
   resetPasswordAPI,
-} from "../../api/authentication";
+} from "../../api/auth/authentication";
 import { showCustomToast } from "../../components/Toaster/ShowCustomToast";
 
 const ForgotPassword = () => {

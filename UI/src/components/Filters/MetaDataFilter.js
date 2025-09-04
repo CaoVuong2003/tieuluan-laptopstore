@@ -1,5 +1,3 @@
-import React, { useCallback, useEffect, useState } from "react";
-
 const MetaDataFilter = ({ title, data = [], selectedValues = [], onChange }) => {
   const handleCheckboxChange = (value, checked) => {
     let newSelected;

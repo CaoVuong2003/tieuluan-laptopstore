@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading } from '../../store/features/common';
-import { cancelOrderAPI, fetchOrderAPI } from '../../api/userInfo';
+import { cancelOrderAPI, fetchOrderAPI } from '../../api/user/userInfo';
 import { cancelOrder, loadOrders, selectAllOrders } from '../../store/features/user';
 import moment from 'moment';
 import Timeline from '../../components/Timeline/Timeline';

@@ -1,6 +1,9 @@
 package com.tieuluan.laptopstore.auth.config;
 
 import com.tieuluan.laptopstore.auth.exceptions.RESTAuthenticationEntryPoint;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +44,15 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors.configurationSource(request -> {
+                var config = new org.springframework.web.cors.CorsConfiguration();
+                config.setAllowedOrigins(List.of("http://localhost:3000")); 
+                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                config.setAllowedHeaders(List.of("*"));
+                config.setAllowCredentials(true);
+                return config;
+            }))
+
             // Tắt CSRF vì bạn dùng JWT, không cần CSRF token
             .csrf(AbstractHttpConfigurer::disable)
 

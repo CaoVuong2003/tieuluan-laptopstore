@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateAddressAPI } from "../../../api/userInfo";
+import { updateAddressAPI } from "../../../api/user/userInfo";
 import { updateAddress } from "../../../store/features/user";
 import { setLoading } from "../../../store/features/common";
 import { motion, AnimatePresence } from "framer-motion";

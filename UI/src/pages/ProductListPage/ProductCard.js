@@ -11,9 +11,7 @@ const ProductCard = ({
   title,
   description,
   price,
-  discount,
   rating = 0,
-  brand,
   thumbnail,
   slug
 }) => {

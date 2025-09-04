@@ -1,9 +1,9 @@
 package com.tieuluan.laptopstore.auth.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tieuluan.laptopstore.auth.dto.RedisUser;
+import com.tieuluan.laptopstore.auth.dto.CodeResponse;
 import com.tieuluan.laptopstore.auth.dto.RegistrationRequest;
-import com.tieuluan.laptopstore.auth.dto.RegistrationResponse;
+import com.tieuluan.laptopstore.auth.dto.ForgotPassword.RedisUser;
 import com.tieuluan.laptopstore.auth.entities.User;
 import com.tieuluan.laptopstore.auth.repositories.UserDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +44,11 @@ public class RegistrationService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public RegistrationResponse createUser(RegistrationRequest request) {
+    public CodeResponse createUser(RegistrationRequest request) {
         User existing = userDetailRepository.findByEmail(request.getEmail());
 
         if (existing != null) {
-            return RegistrationResponse.builder()
+            return CodeResponse.builder()
                     .code(400)
                     .message("Email already exist!")
                     .build();
@@ -94,7 +94,7 @@ public class RegistrationService {
             // Gửi email xác thực
             emailService.sendMail(user, otp);
 
-            return RegistrationResponse.builder()
+            return CodeResponse.builder()
                     .code(200)
                     .message("User created!")
                     .build();

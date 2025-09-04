@@ -7,23 +7,22 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 import { Provider } from 'react-redux';
 import store from './store/store';
-import ShopApplicationWrapper from './layouts/ShopApplicationWrapper';
 import Modal from 'react-modal';
 import { Toaster } from 'react-hot-toast';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n/i18n';
 
 Modal.setAppElement('#root');
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Provider store={store}>
-        <>
-            <Toaster position="top-right" reverseOrder={false} />
-            <RouterProvider router={router}>
-            
-                <ShopApplicationWrapper />
-            
-            </RouterProvider>
-        </>
+        <I18nextProvider i18n={i18n}>
+            <>
+                <Toaster position="top-right" reverseOrder={false} />
+                <RouterProvider router={router}/>
+            </>
+        </I18nextProvider>
     </Provider>
 );
 

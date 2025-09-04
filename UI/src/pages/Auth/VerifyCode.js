@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../store/features/common';
-import { verifyOtpRAPI } from '../../api/authentication';
+import { verifyOtpRAPI } from '../../api/auth/authentication';
 
 const VerifyCode = ({email}) => {
 

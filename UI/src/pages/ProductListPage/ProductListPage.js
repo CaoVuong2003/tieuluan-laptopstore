@@ -5,18 +5,16 @@ import ProductCard from "./ProductCard";
 import { useDispatch } from "react-redux";
 import { setLoading } from "../../store/features/common";
 import { useParams, useLocation } from "react-router-dom";
-import { fetchCategories} from "../../api/fetchCategories";
-import { fetchFilters} from "../../api/fetchFilters";
+import { fetchCategories } from "../../api/fetch/fetchCategories";
+import { fetchCategoryFilters } from "../../api/fetch/fetchFilters";
 import MetaDataFilter from "../../components/Filters/MetaDataFilter";
-import axios from "axios";
-import {
-  API_BASE_URL,
-  getHeaders
-} from "../../api/constant"; // cập nhật đúng đường dẫn của bạn
+import { getProductCategoryId } from "../../api/product/product";
+import { useTranslation } from "react-i18next";
 
 const ProductListPage = () => {
+  const {t} = useTranslation();
   const location = useLocation();
-  const { filterKey, filterValue } = location.state?.autoFilter || {};
+  const { filterKey, filterValue, categoryId } = location.state?.autoFilter || {};
   const { categorySlug } = useParams();
   const dispatch = useDispatch();
 
@@ -38,17 +36,18 @@ const ProductListPage = () => {
       const prices = products
         .map((p) => Number(p.price))
         .filter((p) => !isNaN(p));
-      const min = Math.min(...prices);
-      const max = Math.max(...prices);
-
-      setPriceRange({ min, max });
-      setFilters((prev) => ({ ...prev, price: { min, max } }));
+      if (prices.length > 0) {
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        setPriceRange({ min, max });
+        setFilters((prev) => ({ ...prev, price: { min, max } }));
+      }
     }
   }, [products]);
 
   const slugToCode = (slug) => {
     if (!slug) return "";
-    return slug.replace(/-/g, "").toUpperCase();
+    return slug.toUpperCase();
   };
 
   const filterProducts = (products, filters) => {
@@ -64,16 +63,12 @@ const ProductListPage = () => {
         if (!Array.isArray(filterValues) || filterValues.length === 0)
           return true;
 
-        if (!product.specifications || !Array.isArray(product.specifications))
-          return false;
-
         if (key === "Loại sản phẩm") {
           return filterValues.includes(product.categoryTypeName);
         }
 
-        if (key === "Hãng sản phẩm") {
-          return filterValues.includes(product.categoryBrandName);
-        }
+        if (!product.specifications || !Array.isArray(product.specifications))
+          return false;
 
         const specValues = product.specifications
           .filter((spec) => spec.name === key)
@@ -93,22 +88,30 @@ const ProductListPage = () => {
       dispatch(setLoading(true));
       try {
         const categories = await fetchCategories();
-        const codeFromSlug = slugToCode(categorySlug);
-        const foundCategory = categories.find(
-          (cat) => cat.code.toUpperCase() === codeFromSlug
-        );
+
+        // ✅ Xác định categoryId
+        let targetCategoryId = categoryId;
+        let foundCategory = null;
+
+        if (targetCategoryId) {
+          foundCategory = categories.find((cat) => cat.id === targetCategoryId);
+        } else {
+          const codeFromSlug = slugToCode(categorySlug);
+          foundCategory = categories.find(
+            (cat) => cat.code.toUpperCase() === codeFromSlug
+          );
+          targetCategoryId = foundCategory?.id;
+        }
+
         setCategory(foundCategory || null);
 
-        if (foundCategory?.id) {
-          const url = `${API_BASE_URL}/api/products?categoryId=${foundCategory.id}`;
-          const productsRes = await axios.get(url, {
-            headers: getHeaders(),
-          });
-
-          const fetchedProducts = productsRes.data || [];
+        if (targetCategoryId) {
+          // ✅ Lấy sản phẩm
+          const fetchedProducts = await getProductCategoryId(targetCategoryId);
           setProducts(fetchedProducts);
 
-          const filtersFromApi = await fetchFilters(foundCategory.id);
+          // ✅ Lấy bộ lọc từ API
+          const filtersFromApi = await fetchCategoryFilters(targetCategoryId);
 
           const filterMap = {};
           const dynamicFilters = {};
@@ -118,6 +121,7 @@ const ProductListPage = () => {
               const specName = spec.name;
               const specValues = spec.specificationValues.map((val) => ({
                 id: val.id,
+                code: val.code || val.id,
                 name: val.value,
               }));
 
@@ -126,38 +130,34 @@ const ProductListPage = () => {
             }
           }
 
-          const brands = [...new Set(fetchedProducts.map((p) => p.categoryBrandName).filter(Boolean))];
-          const types = [...new Set(fetchedProducts.map((p) => p.categoryTypeName).filter(Boolean))];
-
-          if (brands.length > 0) {
-            filterMap["Hãng sản phẩm"] = brands.map((val, idx) => ({ id: `brand-${idx}`, name: val }));
-            dynamicFilters["Hãng sản phẩm"] = [];
-          }
+          // ✅ Loại sản phẩm (categoryTypeName)
+          const types = [
+            ...new Set(
+              fetchedProducts.map((p) => p.categoryTypeName).filter(Boolean)
+            ),
+          ];
 
           if (types.length > 0) {
-            filterMap["Loại sản phẩm"] = types.map((val, idx) => ({ id: `type-${idx}`, name: val }));
+            filterMap["Loại sản phẩm"] = types.map((val, idx) => ({
+              id: `type-${idx}`,
+              code: val,
+              name: val,
+            }));
             dynamicFilters["Loại sản phẩm"] = [];
           }
 
           setAvailableFilters(filterMap);
 
+          // ✅ Bộ lọc mặc định
           const newFilters = {
             ...dynamicFilters,
             price: { min: 0, max: 999999999 },
           };
 
-          const findNameByCode = (filterArray, code) => {
-            const found = filterArray.find((item) => item.id === code || item.name === code);
-            return found?.name || code;
-          };
-
+          // ✅ Auto chọn filter nếu có từ AsideShop
           if (filterKey && filterValue) {
             if (filterKey === "type" && filterMap["Loại sản phẩm"]) {
-              const matchedName = findNameByCode(filterMap["Loại sản phẩm"], filterValue);
-              newFilters["Loại sản phẩm"] = [matchedName];
-            } else if (filterKey === "brand" && filterMap["Hãng sản phẩm"]) {
-              const matchedName = findNameByCode(filterMap["Hãng sản phẩm"], filterValue);
-              newFilters["Hãng sản phẩm"] = [matchedName];
+              newFilters["Loại sản phẩm"] = [filterValue];
             }
           }
 
@@ -186,16 +186,23 @@ const ProductListPage = () => {
             className="flex items-center gap-2 border px-3 py-1 rounded-md"
           >
             <FilterIcon />
-            <span>Lọc sản phẩm</span>
+            <span>{t("productList.filter_button")}</span>
           </button>
         </div>
 
         {/* Filter Panel */}
-        <div className={`w-full lg:w-[20%] p-[10px] border rounded-lg m-[10px] 
-              ${showFilters ? "block" : "hidden"} lg:block`}>
+        <div
+          className={`w-full lg:w-[20%] p-[10px] border rounded-lg m-[10px] 
+              ${showFilters ? "block" : "hidden"} lg:block`}
+        >
           <div className="flex justify-between items-center">
-            <p className="text-[16px] text-gray-600">Bộ lọc</p>
-            <button onClick={() => setShowFilters(false)} className="lg:hidden text-sm text-red-600">Đóng</button>
+            <p className="text-[16px] text-gray-600">{t("productList.filter_title")}</p>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="lg:hidden text-sm text-red-600"
+            >
+              {t("productList.close")}
+            </button>
           </div>
 
           <button
@@ -205,11 +212,11 @@ const ProductListPage = () => {
                 price: { min: priceRange.min, max: priceRange.max },
                 ...Object.fromEntries(
                   Object.keys(availableFilters).map((key) => [key, []])
-                )
+                ),
               })
             }
           >
-            Xóa bộ lọc
+            {t("productList.filter_clear")}
           </button>
 
           <PriceFilter
@@ -229,7 +236,9 @@ const ProductListPage = () => {
                 title={specType}
                 data={safeValues}
                 selectedValues={filters[specType] || []}
-                onChange={(selectedValues) => handleFilterChange(specType, selectedValues)}
+                onChange={(selectedValues) =>
+                  handleFilterChange(specType, selectedValues)
+                }
               />
             );
           })}
@@ -254,4 +263,3 @@ const ProductListPage = () => {
 };
 
 export default ProductListPage;
-

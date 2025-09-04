@@ -1,25 +1,28 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Wishlist } from "../common/Wishlist";
 import { AccountIcon } from "../common/AccountIcon";
 import { CartIcon } from "../common/CartIcon";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import "./Navigation.css";
 import { useSelector } from "react-redux";
 import { selectTotalQuantity } from "../../store/features/cart"; 
-import { getProductBySearch } from "../../api/fetchProducts";
+import { getProductBySearch } from "../../api/fetch/fetchProducts";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../Buttons/LanguageSwitcher";
+import "./Navigation.css";
 
 const Navigation = ({ variant = "default" }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const totalQuantity = useSelector(selectTotalQuantity);
+
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const searchBoxRef = useRef(null);
+
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearchInput, setShowSearchInput] = useState(false);
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
   const handleProductClick = (slug) => {
     setSearchTerm("");
@@ -41,117 +44,162 @@ const Navigation = ({ variant = "default" }) => {
     const timer = setTimeout(() => {
       if (searchTerm.trim()) {
         getProductBySearch(searchTerm)
-          .then((data) => {
-            setFilteredProducts(data);
-          })
-          .catch((err) => {
-            console.error("Lỗi khi tìm kiếm:", err);
-            setFilteredProducts([]);
-          });
+          .then((data) => setFilteredProducts(data))
+          .catch(() => setFilteredProducts([]));
       } else {
         setFilteredProducts([]);
       }
     }, 300);
-
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
   return (
-    <nav className="flex flex-col md:flex-row items-start md:items-center py-4 px-4 md:px-16 justify-between gap-4 md:gap-20 custom-nav">
-      {/* Logo */}
-      <div className="flex items-center justify-between w-full md:w-auto">
-        <a className="text-3xl text-black font-bold gap-8" href="/">
-          LaptopStore
-        </a>
+    <nav className="bg-white shadow-md w-full z-40">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="flex justify-between items-center py-4 gap-8">
+          {/* Logo */}
+          <Link to="/" className="text-2xl font-bold text-black">
+            LaptopStore
+          </Link>
 
-        {/* Mobile Icons */}
-        <div className="flex items-center gap-4 md:hidden">
-          {/* Search Icon */}
-          <button onClick={() => setShowSearchInput(!showSearchInput)}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-            </svg>
-          </button>
+          {/* Desktop Menu */}
+          {variant === "default" && (
+            <ul className="hidden md:flex gap-8 text-gray-600 font-medium mx-auto">
+              <li><NavLink to="/" className={({ isActive }) => isActive ? "text-black" : ""}>{t("nav.home")}</NavLink></li>
+              <li><NavLink to="/laptop" className={({ isActive }) => isActive ? "text-black" : ""}>{t("nav.laptop")}</NavLink></li>
+              <li><NavLink to="/linhkien" className={({ isActive }) => isActive ? "text-black" : ""}>{t("nav.laptopComponents")}</NavLink></li>
+              <li><NavLink to="/phukien" className={({ isActive }) => isActive ? "text-black" : ""}>{t("nav.accessory")}</NavLink></li>
+            </ul>
+          )}
 
-          {/* Menu Icon */}
-          <button onClick={() => setShowMobileMenu(!showMobileMenu)}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
+          {/* Icons + Search */}
+          <div className="flex items-center gap-4">
+            {/* Search desktop */}
+            {variant === "default" && (
+              <div
+                className="hidden md:block relative w-64"
+                ref={searchBoxRef}
+              >
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder={t("nav.search_placeholder")}
+                  className="w-full border rounded-lg px-3 py-2 text-sm outline-none"
+                />
+                {searchTerm && filteredProducts.length > 0 && (
+                  <ul className="absolute top-full left-0 bg-white shadow-lg mt-1 rounded w-full max-h-80 overflow-y-auto z-50 border">
+                    {filteredProducts.map((product) => (
+                      <li
+                        key={product.id}
+                        className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleProductClick(product.slug)}
+                      >
+                        <img
+                          src={product.thumbnail || "/default-image.jpg"}
+                          alt={product.name}
+                          className="w-10 h-10 object-cover rounded"
+                        />
+                        <div>
+                          <p className="text-sm font-medium">{product.name}</p>
+                          <p className="text-xs text-gray-500">
+                            {product.price.toLocaleString()}₫
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
 
-      {/* Nav Links */}
-      {variant === "default" && (
-        <div className={`${showMobileMenu ? "block" : "hidden"} w-full md:flex md:w-auto md:flex-wrap items-center gap-10`}>
-          <ul className="flex flex-col md:flex-row gap-4 md:gap-14 text-gray-600 hover:text-black">
-            <li>
-              <NavLink to="/" className={({ isActive }) => (isActive ? "active-link" : "")} onClick={() => setShowMobileMenu(false)}>Trang Chủ</NavLink>
-            </li>
-            <li>
-              <NavLink to="/laptop" className={({ isActive }) => (isActive ? "active-link" : "")} onClick={() => setShowMobileMenu(false)}>Laptop</NavLink>
-            </li>
-            <li>
-              <NavLink to="/linh-kien" className={({ isActive }) => (isActive ? "active-link" : "")} onClick={() => setShowMobileMenu(false)}>Linh Kiện Laptop</NavLink>
-            </li>
-            <li>
-              <NavLink to="/phu-kien" className={({ isActive }) => (isActive ? "active-link" : "")} onClick={() => setShowMobileMenu(false)}>Phụ Kiện Laptop</NavLink>
-            </li>
-          </ul>
+            {/* Desktop Icons */}
+            {variant === "default" && (
+              <div className="hidden sm:flex items-center gap-4">
+                <button onClick={() => navigate("/account-details/profile")}>
+                  <AccountIcon />
+                </button>
+                <button>
+                  <Wishlist />
+                </button>
+                <Link to="/cart-items" className="relative">
+                  <CartIcon />
+                  {totalQuantity > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {totalQuantity}
+                    </span>
+                  )}
+                </Link>
+              </div>
+            )}
 
-          {/* Thêm icons/đăng nhập chung menu mobile */}
-          <div className="flex flex-col md:hidden gap-4 pt-4 border-t border-gray-200 w-full">
-            <div className="flex gap-6">
-              <button><Wishlist /></button>
-              <button onClick={() => navigate("/account-details/profile")}><AccountIcon /></button>
+            {/* Auth variant */}
+            {variant === "auth" && (
+              <>
+                <NavLink to="/auth/login" className="px-3 py-1 border rounded">{t("auth.login")}</NavLink>
+                <NavLink to="/auth/register" className="px-3 py-1 border rounded">{t("auth.register")}</NavLink>
+              </>
+            )}
+
+            {/* Language switch desktop */}
+            <div className="hidden md:block ml-4">
+              <LanguageSwitcher />
+            </div>
+
+            {/* Mobile toggles */}
+            <div className="flex md:hidden gap-3 items-center">
               <Link to="/cart-items" className="relative">
                 <CartIcon />
                 {totalQuantity > 0 && (
-                  <div className="absolute -right-2 -top-2 inline-flex items-center justify-center h-4 w-4 bg-black text-white rounded-full text-xs">
+                  <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {totalQuantity}
-                  </div>
+                  </span>
                 )}
               </Link>
+              <button onClick={() => setShowSearchInput(!showSearchInput)}>
+                🔍
+              </button>
+              {variant === "default" && (
+                <button onClick={() => setShowMobileMenu(!showMobileMenu)}>
+                  {showMobileMenu ? "✖" : "☰"}
+                </button>
+              )}
+              {showMobileMenu && variant === "auth" && (
+                <div className="mt-3">
+                  <LanguageSwitcher />
+                </div>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Search Box */}
-      {variant === "default" && (
-        <div className={`relative w-full md:w-[300px] ${showSearchInput || window.innerWidth >= 768 ? "block" : "hidden"}`} ref={searchBoxRef}>
-          <div className="border rounded flex overflow-hidden w-full">
-            <div className="flex items-center justify-center px-4 border-1 w-full">
-              <svg className="h-4 w-4 text-grey-dark" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-              </svg>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="px-4 py-2 outline-none w-full"
-                placeholder="Tìm kiếm sản phẩm..."
-              />
-            </div>
-          </div>
-
+      {/* Mobile Search */}
+      {showSearchInput && (
+        <div className="md:hidden px-4 pb-2" ref={searchBoxRef}>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder={t("nav.search_placeholder")}
+            className="w-full border rounded-lg px-3 py-2 text-sm outline-none"
+          />
           {searchTerm && filteredProducts.length > 0 && (
-            <ul className="absolute top-full left-0 bg-white shadow-lg mt-1 rounded w-full max-h-80 overflow-y-auto z-30 border border-gray-200">
+            <ul className="bg-white shadow-lg mt-1 rounded w-full max-h-60 overflow-y-auto z-50 border">
               {filteredProducts.map((product) => (
                 <li
                   key={product.id}
-                  className="flex items-center gap-4 p-3 hover:bg-gray-100 cursor-pointer"
+                  className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
                   onClick={() => handleProductClick(product.slug)}
                 >
                   <img
                     src={product.thumbnail || "/default-image.jpg"}
                     alt={product.name}
-                    className="w-12 h-12 object-cover rounded"
+                    className="w-10 h-10 object-cover rounded"
                   />
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-900">{product.name}</span>
-                    <span className="text-sm text-gray-500">{product.price.toLocaleString()}₫</span>
+                  <div>
+                    <p className="text-sm font-medium">{product.name}</p>
+                    <p className="text-xs text-gray-500">{product.price.toLocaleString()}₫</p>
                   </div>
                 </li>
               ))}
@@ -160,34 +208,28 @@ const Navigation = ({ variant = "default" }) => {
         </div>
       )}
 
-      {/* Icons */}
-      <div className="hidden md:flex flex-wrap items-center gap-4">
-        {variant === "default" && (
-          <ul className="flex gap-8">
-            <li><button onClick={() => navigate("/account-details/profile")}><AccountIcon /></button></li>
-            <li>
-              <Link to="/cart-items" className="flex flex-wrap relative">
-                <CartIcon />
-                {totalQuantity > 0 && (
-                  <div className="absolute ml-6 mt-0 inline-flex items-center justify-center h-5 w-5 bg-black text-white rounded-full border-2 text-xs border-white">
-                    {totalQuantity}
-                  </div>
-                )}
-              </Link>
-            </li>
+      {/* Mobile Menu */}
+      {showMobileMenu && variant === "default" && (
+        <div className="md:hidden bg-white border-t shadow-lg">
+          <ul className="flex flex-col gap-3 px-4 py-4">
+            <NavLink to="/" onClick={() => setShowMobileMenu(false)}>{t("nav.home")}</NavLink>
+            <NavLink to="/laptop" onClick={() => setShowMobileMenu(false)}>{t("nav.laptop")}</NavLink>
+            <NavLink to="/linhkien" onClick={() => setShowMobileMenu(false)}>{t("nav.laptopComponents")}</NavLink>
+            <NavLink to="/phukien" onClick={() => setShowMobileMenu(false)}>{t("nav.accessory")}</NavLink>
+
+            {/* Account + Wishlist */}
+            <div className="flex gap-3 mt-3">
+              <button onClick={() => navigate("/account-details/profile")}><AccountIcon /></button>
+              <button><Wishlist /></button>
+            </div>
+
+            {/* Language switch mobile */}
+            <div className="mt-3">
+              <LanguageSwitcher mobile />
+            </div>
           </ul>
-        )}
-        {variant === "auth" && (
-          <ul className="flex gap-8">
-            <li className="text-black border border-black hover:bg-slate-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
-              <NavLink to={"/auth/login"} className={({ isActive }) => (isActive ? "active-link" : "")}>Login</NavLink>
-            </li>
-            <li className="text-black border border-black hover:bg-slate-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
-              <NavLink to="/auth/register" className={({ isActive }) => (isActive ? "active-link" : "")}>Signup</NavLink>
-            </li>
-          </ul>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 };

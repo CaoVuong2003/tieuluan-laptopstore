@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '../../store/features/common';
 import { clearCart } from '../../store/features/cart';
-import { confirmPaymentAPI } from '../../api/order';
+import { confirmPaymentAPI } from '../../api/order/order';
 import { toast } from 'react-hot-toast';
 
 const ConfirmPayment = () => {

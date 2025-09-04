@@ -2,7 +2,7 @@ package com.tieuluan.laptopstore.auth.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.tieuluan.laptopstore.auth.dto.UserDetailsDto;
+import com.tieuluan.laptopstore.auth.dto.User.UserDetailsDto;
 import com.tieuluan.laptopstore.auth.entities.User;
 
 /**

@@ -6,11 +6,11 @@ import ProductColors from "./ProductColors";
 import SvgCreditCard from "../../components/common/SvgCreditCard";
 import SvgShipping from "../../components/common/SvgShipping";
 import SvgReturn from "../../components/common/SvgReturn";
-import SectionHeading from "../../components/Sections/SectionsHeading/SectionHeading";
+import SectionHeading from "../../components/SectionsHeading/SectionHeading";
 import ProductCard from "../ProductListPage/ProductCard";
 import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
-import { getAllProducts } from "../../api/fetchProducts";
+import { getAllProducts } from "../../api/fetch/fetchProducts";
 import { addItemToCartAction } from "../../store/actions/cartAction";
 
 const extraSections = [

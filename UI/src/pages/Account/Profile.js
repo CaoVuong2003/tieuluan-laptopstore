@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { removeAddress, selectUserInfo } from "../../store/features/user";
 import { setLoading } from "../../store/features/common";
-import { deleteAddressAPI } from "../../api/userInfo";
+import { deleteAddressAPI } from "../../api/user/userInfo";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import EditProfile from "./Profile/EditProfile";

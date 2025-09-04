@@ -2,14 +2,14 @@ package com.tieuluan.laptopstore.auth.controller;
 
 import com.tieuluan.laptopstore.auth.services.EmailService;
 import com.tieuluan.laptopstore.auth.config.JWTTokenHelper;
-import com.tieuluan.laptopstore.auth.dto.ForgotPasswordRequest;
+import com.tieuluan.laptopstore.auth.dto.CodeResponse;
 import com.tieuluan.laptopstore.auth.dto.LoginRequest;
 import com.tieuluan.laptopstore.auth.dto.RegistrationRequest;
-import com.tieuluan.laptopstore.auth.dto.RegistrationResponse;
-import com.tieuluan.laptopstore.auth.dto.ResendOtp;
-import com.tieuluan.laptopstore.auth.dto.ResetPasswordRequest;
-import com.tieuluan.laptopstore.auth.dto.UserToken;
-import com.tieuluan.laptopstore.auth.dto.VerifyOtpForgotPassword;
+import com.tieuluan.laptopstore.auth.dto.ForgotPassword.ForgotPasswordRequest;
+import com.tieuluan.laptopstore.auth.dto.ForgotPassword.ResendOtp;
+import com.tieuluan.laptopstore.auth.dto.ForgotPassword.ResetPasswordRequest;
+import com.tieuluan.laptopstore.auth.dto.ForgotPassword.VerifyOtpForgotPassword;
+import com.tieuluan.laptopstore.auth.dto.User.UserToken;
 import com.tieuluan.laptopstore.auth.entities.User;
 import com.tieuluan.laptopstore.auth.repositories.UserDetailRepository;
 import com.tieuluan.laptopstore.auth.services.OtpService;
@@ -115,9 +115,9 @@ public class AuthController {
 
     // API register: dùng để đăng ký tài khoản mới
     @PostMapping("/register")
-    public ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest request){
+    public ResponseEntity<CodeResponse> register(@RequestBody RegistrationRequest request){
         // Gọi service để xử lý tạo tài khoản
-        RegistrationResponse registrationResponse = registrationService.createUser(request);
+        CodeResponse registrationResponse = registrationService.createUser(request);
 
         // Trả về response với code 200 nếu thành công, còn lại thì 400 Bad Request
         return new ResponseEntity<>(registrationResponse,

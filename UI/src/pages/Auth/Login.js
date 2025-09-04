@@ -1,12 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import GoogleSignIn from '../../components/Buttons/GoogleSignIn'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../store/features/common'
-import { loginAPI } from '../../api/authentication';
+import { loginAPI } from '../../api/auth/authentication';
 import { saveToken } from '../../utils/jwt-helper';
 import { showCustomToast } from '../../components/Toaster/ShowCustomToast';
+import { useTranslation } from "react-i18next";
+
 const Login = () => {
+  const { t } = useTranslation();
   const [values,setValues] =useState({
     userName:'',
     password:''
@@ -51,21 +54,21 @@ const Login = () => {
   },[]);
 
   return (
-    <div className='px-8 w-full'>
+    <div className='px-4 w-full'>
 
-      <p className='text-3xl font-bold pb-4 pt-4'>Sign In</p>
+      <p className='text-3xl font-bold pb-4 pt-4'>{t("auth.login")}</p>
       <GoogleSignIn/>
-      <p className='text-gray-500 items-center text-center w-full py-2'>OR</p>
+      <p className='text-gray-500 items-center text-center w-full py-2'>{t("auth.or")}</p>
     
       <div className='pt-4'>
         <form onSubmit={onSubmit}>
-          <input type="email" name='userName' value={values?.userName} onChange={handleOnChange} placeholder='Email address' className='h-[48px] w-full border p-2 border-gray-400' required/>
-          <Link to={"/auth/forgot-password"} className='text-right w-full float-right underline pt-2 text-gray-500 hover:text-black text-sm' tabIndex={-1}>Forgot Password?</Link>
-          <input type="password" name='password' value={values?.password} onChange={handleOnChange} placeholder='Password' className='h-[48px] mt-2 w-full border p-2 border-gray-400' required autoComplete='new-password'/>
-          <button className='border w-full rounded-lg h-[48px] mb-4 bg-black text-white mt-4 hover:opacity-80'>Sign In</button>
+          <input type="email" name='userName' value={values?.userName} onChange={handleOnChange} placeholder={t("auth.email")} className='h-[48px] w-full border p-2 border-gray-400' required/>
+          <Link to={"/auth/forgot-password"} className='text-right w-full float-right underline pt-2 text-gray-500 hover:text-black text-sm' tabIndex={-1}>{t("auth.forgot_password")}</Link>
+          <input type="password" name='password' value={values?.password} onChange={handleOnChange} placeholder={t("auth.password")} className='h-[48px] mt-2 w-full border p-2 border-gray-400' required autoComplete='new-password'/>
+          <button className='border w-full rounded-lg h-[48px] mb-4 bg-black text-white mt-4 hover:opacity-80'>{t("auth.login")}</button>
         </form>
       </div>
-      <Link to={"/auth/register"} className='underline text-gray-500 hover:text-black'>Don’t have an account? Sign up</Link>
+      <Link to={"/auth/register"} className='underline text-gray-500 hover:text-black'>{t("auth.dont_have_account")}</Link>
     </div>
   )
 }

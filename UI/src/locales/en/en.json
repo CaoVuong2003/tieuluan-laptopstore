@@ -1,0 +1,68 @@
+{
+    "auth":{
+        "login": "Sign In",
+        "register": "Sign Up",
+        "logout": "Logout",
+        "email": "Email",
+        "username": "Username",
+        "password": "Password",
+        "phoneNumber": "Phone Number",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "address": "Address",
+        "google_signin": "Sign in with Google",
+        "submit": "Submit",
+        "forgot_password": "Forgot Password?",
+        "remember_me": "Remember Me",
+        "or": "OR",
+        "dont_have_account": "Don't have an account? Sign up",
+        "already_have_account": "Already have an account? Sign in"
+    },
+    "nav":{
+        "home": "Home",
+        "laptop": "Laptop",
+        "laptopComponents": "Laptop Components",
+        "accessory": "Accessory",
+        "search_placeholder": "Search for products..."
+
+    },
+    "home":{
+        "featuredProducts": "Featured Products"
+    },
+    "productList": {
+        "filter_button": "Filter products",
+        "filter_title": "Filters",
+        "filter_close": "Close",
+        "filter_clear": "Clear filters"
+    },
+    "components": {
+        "loading": "Loading...",
+        "price": "Price"
+    },
+    "footer": {
+        "about": "About LAPTOPSTORE",
+        "intro": "Introduction",
+        "recruitment": "Recruitment",
+
+        "policy": "Policies",
+        "warranty_policy": "Warranty Policy",
+        "payment_policy": "Payment Policy",
+        "shipping_policy": "Shipping Policy",
+        "privacy_policy": "Privacy Policy",
+
+        "information": "Information",
+        "store_system": "Store System",
+        "shopping_guide": "Shopping Guide",
+        "warranty_lookup": "Warranty Address Lookup",
+
+        "support_hotline": "SUPPORT HOTLINE",
+        "purchase": "Purchase:",
+        "warranty": "Warranty:",
+        "complaint": "Complaint:",
+
+        "shipping_unit": "Shipping Units",
+        "payment_method": "Payment Methods",
+
+        "connect": "Connect with us"
+    }
+}

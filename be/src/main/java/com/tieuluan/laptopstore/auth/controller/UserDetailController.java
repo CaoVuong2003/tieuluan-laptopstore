@@ -1,6 +1,6 @@
 package com.tieuluan.laptopstore.auth.controller;
 
-import com.tieuluan.laptopstore.auth.dto.UserDetailsDto;
+import com.tieuluan.laptopstore.auth.dto.User.UserDetailsDto;
 import com.tieuluan.laptopstore.auth.entities.User;
 import com.tieuluan.laptopstore.auth.mapper.UserDetailsMapper;
 import com.tieuluan.laptopstore.auth.repositories.UserDetailRepository;

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tieuluan.laptopstore.auth.dto.AuthorityDto;
-import com.tieuluan.laptopstore.auth.dto.AuthorityRequestDto;
+import com.tieuluan.laptopstore.auth.dto.Role.AuthorityDto;
+import com.tieuluan.laptopstore.auth.dto.Role.AuthorityRequestDto;
 import com.tieuluan.laptopstore.auth.entities.Authority;
 import com.tieuluan.laptopstore.auth.services.AuthorityService;
 

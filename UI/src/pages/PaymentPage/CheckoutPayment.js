@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { PaymentElement, useElements, useStripe} from '@stripe/react-stripe-js';
-import { placeOrderAPI } from '../../api/order';
+import { placeOrderAPI } from '../../api/order/order';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCartItems } from '../../store/features/cart';
 import { createOrderRequest } from '../../utils/order-util';
 import { setLoading } from '../../store/features/common';
-import { confirmPaymentAPI } from '../../api/order';
+import { confirmPaymentAPI } from '../../api/order/order';
 import toast from 'react-hot-toast';
 import { clearCart } from '../../store/features/cart';
 import { useNavigate } from 'react-router-dom';

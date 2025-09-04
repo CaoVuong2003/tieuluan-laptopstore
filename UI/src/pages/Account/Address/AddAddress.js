@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setLoading } from "../../../store/features/common";
-import { addAddressAPI } from "../../../api/userInfo";
+import { addAddressAPI } from "../../../api/user/userInfo";
 import { saveAddress } from "../../../store/features/user";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";

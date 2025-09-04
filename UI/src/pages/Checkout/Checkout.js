@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCartItems, clearCart } from "../../store/features/cart";
-import { fetchUserDetails } from "../../api/userInfo";
+import { fetchUserDetails } from "../../api/user/userInfo";
 import { setLoading } from "../../store/features/common";
 import { useNavigate, NavLink } from "react-router-dom";
 import PaymentPage from "../PaymentPage/PaymentPage";
 import { format, addDays  } from "date-fns";
 import { AddressDropdown } from "../Account/Address/AddressDropdown";
 import toast from 'react-hot-toast';
-import { fetchShippingProviders, placeOrderAPI } from "../../api/order";
+import { fetchShippingProviders, placeOrderAPI } from "../../api/order/order";
 import { createOrderRequest } from "../../utils/order-util";
 
 const Checkout = () => {

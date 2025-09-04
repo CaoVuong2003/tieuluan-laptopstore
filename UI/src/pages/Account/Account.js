@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../store/features/common";
-import { fetchUserDetails } from "../../api/userInfo";
+import { fetchUserDetails } from "../../api/user/userInfo";
 import { loadUserInfo, selectIsUserAdmin, selectUserInfo } from "../../store/features/user";
 
 const Account = () => {

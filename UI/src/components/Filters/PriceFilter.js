@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
 import "./PriceFilter.css";
+import { useTranslation } from "react-i18next";
 
 const formatCurrency = (value) =>
+  
   value.toLocaleString("vi-VN") + " ₫";
 
 const PriceFilter = ({ min = 0, max = 1000, onChange }) => {
+  const {t} = useTranslation();
   const [range, setRange] = useState({ min, max });
 
   useEffect(() => {
@@ -21,7 +24,7 @@ const PriceFilter = ({ min = 0, max = 1000, onChange }) => {
 
   return (
     <div className="flex flex-col mb-4">
-      <p className="text-[16px] text-black mt-5 mb-5">Giá (VNĐ)</p>
+      <p className="text-[16px] text-black mt-5 mb-5">{t("components.price")} (VNĐ)</p>
       <RangeSlider
         className="custom-range-slider"
         min={min}
